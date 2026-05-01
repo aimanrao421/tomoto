@@ -43,13 +43,27 @@ const StoreContextProvider = (props) => {
     }
 
     const fetchFoodList = async () =>{
-        const response = await axios.get(url+"/api/food/list");
-        setFoodList(response.data.data)
+        try {
+            const response = await axios.get(url+"/api/food/list");
+            if(response.data.success){
+                setFoodList(response.data.data)
+            } else {
+                console.error("API returned error:", response.data.message)
+            }
+        } catch (error) {
+            console.error("Error fetching food list:", error.message)
+        }
     }
 
     const loadCartData = async (token) =>{
-        const response = await axios.post(url+"/api/cart/get",{},{headers:{token}})
-        setCartItems(response.data.cartData);
+        try {
+            const response = await axios.post(url+"/api/cart/get",{},{headers:{token}})
+            if(response.data.success){
+                setCartItems(response.data.cartData);
+            }
+        } catch (error) {
+            console.error("Error loading cart data:", error.message)
+        }
     }
 
     useEffect(()=>{

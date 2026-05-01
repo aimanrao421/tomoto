@@ -8,23 +8,33 @@ const List = ({url}) => {
   const [list, setList] = useState([]);
 
   const fetchList = async () =>{
-    const response = await axios.get(`${url}/api/food/list`)
-   
-    if(response.data.success){
-      setList(response.data.data)
-    }
-    else{
-      toast.error("Error")
+    try {
+      const response = await axios.get(`${url}/api/food/list`)
+      
+      if(response.data.success){
+        setList(response.data.data)
+      }
+      else{
+        toast.error(response.data.message || "Error fetching food list")
+      }
+    } catch(error) {
+      console.error("Error fetching list:", error)
+      toast.error("Failed to fetch food list. Check console.")
     }
   }
 
   const removeFood = async (foodId) =>{
-    const response = await axios.post(`${url}/api/food/remove`,{id:foodId})
-    await fetchList();
-    if(response.data.success){
-      toast.success(response.data.message)
-    }else{
-      toast.error('Error');
+    try {
+      const response = await axios.post(`${url}/api/food/remove`,{id:foodId})
+      if(response.data.success){
+        toast.success(response.data.message)
+        await fetchList();
+      }else{
+        toast.error(response.data.message || 'Error removing food');
+      }
+    } catch(error) {
+      console.error("Error removing food:", error)
+      toast.error("Failed to remove food. Check console.")
     }
   }
 
